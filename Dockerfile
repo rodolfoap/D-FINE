@@ -1,6 +1,6 @@
 FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
 ENV DEBIAN_FRONTEND=noninteractive
-WORKDIR /workspace
+WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

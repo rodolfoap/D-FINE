@@ -117,8 +117,11 @@ def main(args):
     if "HGNetv2" in cfg.yaml_cfg:
         cfg.yaml_cfg["HGNetv2"]["pretrained"] = False
 
+    device = args.device
+    print(f"Using device: {device}")
+
     if args.resume:
-        checkpoint = torch.load(args.resume, map_location="cpu")
+        checkpoint = torch.load(args.resume, map_location=device)
         if "ema" in checkpoint:
             state = checkpoint["ema"]["module"]
         else:
@@ -139,8 +142,6 @@ def main(args):
             outputs = self.model(images)
             outputs = self.postprocessor(outputs, orig_target_sizes)
             return outputs
-
-    device = args.device
     model = Model().to(device)
 
     # Check if the input file is an image or a video
