@@ -52,13 +52,16 @@ total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 print(f"Video: {fps_video:.1f} FPS nominal, {total_frames} frames")
 
 frame_count = 0
-last_time = time.time()
 fps = 0
 times_infer = []
+last_time = None
 
 try:
     while True:
+        t_frame_start = time.time()
         ret, frame = cap.read()
+        t_read = time.time()
+
         if not ret:
             break
 
@@ -67,13 +70,17 @@ try:
 
         # Inference
         img = cv2.resize(frame, (640, 640))
+        t_resize = time.time()
+
         img_t = torch.from_numpy(img).permute(2, 0, 1).unsqueeze(0).float().to(device) / 255.0
         size = torch.tensor([[w, h]], dtype=torch.float32).to(device)
+        t_prep = time.time()
 
         t_start_infer = time.time()
         with torch.no_grad(), torch.amp.autocast('cuda'):
             outputs = model(img_t)
             labels, boxes, scores = postprocessor(outputs, size)
+        torch.cuda.synchronize()
         t_end_infer = time.time()
 
         infer_time = (t_end_infer - t_start_infer) * 1000
@@ -87,14 +94,24 @@ try:
         # Count detections above threshold
         num_dets = (scores >= conf_thresh).sum().item()
 
-        # Print every 30 frames
+        # Print every 30 frames with breakdown
         if frame_count % 30 == 0:
             now = time.time()
-            elapsed = now - last_time
-            if elapsed > 0:
-                fps = 30 / elapsed
-            avg_infer = sum(times_infer[-30:]) / len(times_infer[-30:])
-            print(f"Frame {frame_count}/{total_frames}: {num_dets} dets | FPS: {fps:.1f} | infer avg: {avg_infer:.1f}ms", flush=True)
+            if last_time is None:
+                last_time = now
+            else:
+                elapsed = now - last_time
+                if elapsed > 0:
+                    fps = 30 / elapsed
+                avg_infer = sum(times_infer[-30:]) / len(times_infer[-30:])
+
+                read_ms = (t_read - t_frame_start) * 1000
+                resize_ms = (t_resize - t_read) * 1000
+                prep_ms = (t_prep - t_resize) * 1000
+
+                print(f"Frame {frame_count}/{total_frames}: {num_dets} dets | FPS: {fps:.1f} | read:{read_ms:.1f}ms resize:{resize_ms:.1f}ms prep:{prep_ms:.1f}ms infer:{avg_infer:.1f}ms", flush=True)
+
+            last_time = now
 
 except KeyboardInterrupt:
     print("\nInterrupted")

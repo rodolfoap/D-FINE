@@ -4,7 +4,7 @@ services:
     image: dfine:latest
     container_name: dfine
     environment:
-      MODEL_SIZE: "m"  # D-FINE-L: 53.3% AP, measure max throughput
+      MODEL_SIZE: "n"  # D-FINE-L: 53.3% AP, measure max throughput
       CONFIDENCE_THRESHOLD: "0.5"
       DEVICE_ID: "camera_001"
       MEIA_INPUT_ADDRESS: "/data/video.mp4"
