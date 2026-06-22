@@ -1,10 +1,11 @@
 case "$1" in
 e)	vi -p .x
 	;;
-b)	docker build -t dfine:latest .
+s)	docker run -ti --rm -v $(pwd):/app/ --hostname dfine --name dfine --gpus all --entrypoint=/bin/bash dfine
 	;;
-s)	docker run -ti --rm -v $(pwd):/app/ -w /app/ --hostname dfine --name dfine --gpus all --entrypoint=/bin/bash dfine
+f)	docker-compose logs -f
 	;;
-"")	docker run --gpus all dfine:latest
+"")	docker-compose up -d
+	docker-compose logs -f
 	;;
 esac

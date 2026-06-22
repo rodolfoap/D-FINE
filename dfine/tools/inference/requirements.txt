@@ -1,0 +1,7 @@
+opencv-python==4.11.0.86
+faster-coco-eval==1.7.2
+calflops==0.3.2
+transformers==5.12.1
+tensorboard==2.20.0
+scipy==1.17.1
+numpy<2

@@ -2,6 +2,8 @@ output/
 weight/
 *.pyc
 wandb/
+temp/
 *.pth
 *.onnx
 torch_results.jpg
+core.*

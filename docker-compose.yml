@@ -1,0 +1,21 @@
+services:
+  # D-FINE object detection module - bare inference on video file
+  dfine:
+    image: dfine:latest
+    container_name: dfine
+    environment:
+      MODEL_SIZE: "m"  # D-FINE-L: 53.3% AP, measure max throughput
+      CONFIDENCE_THRESHOLD: "0.5"
+      DEVICE_ID: "camera_001"
+      MEIA_INPUT_ADDRESS: "/data/video.mp4"
+    volumes:
+      - ./dfine:/app
+      - ./data/video_1920x1080_15FPS.mp4:/data/video.mp4
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    restart: unless-stopped

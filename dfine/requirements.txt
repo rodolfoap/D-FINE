@@ -1,0 +1,8 @@
+gtd-meia-messaging-python-345==8.0.*
+gtd-meia-platformhelpers-python-408==9.5.*
+gtd-meia-protobufschema-python-354==8.2.0
+gtd-realtimevideocapture-153==8.3.*
+opencv-python==4.11.0.86
+tensorboard==2.20.0
+torch==2.4.0
+torchvision==0.19.0
